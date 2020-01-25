@@ -36,6 +36,27 @@ public class ASTTree {
         setType(TreeNodeType.S_EXPRESSION);
     }
 
+    public ASTTree(ArrayList<ASTTree> lst) {
+        super();
+        this.parent = this;
+        this.lst = lst;
+        setType(TreeNodeType.S_EXPRESSION);
+    }
+
+    public ASTTree(@NotNull ASTTree template, String newTokenName) {
+        super();
+        atom = template.atom;
+        parent = this;
+        type = template.type;
+        lst = template.lst;
+        atom.setToken(newTokenName);
+        if (atom.isInteger()) {
+            integerVal = atom.integerValue();
+        } else {
+            integerVal = template.integerVal;
+        }
+    }
+
     public String getAtomName() {
         return atom.toString();
     }
@@ -50,12 +71,39 @@ public class ASTTree {
         return type == TreeNodeType.ATOM;
     }
 
+    public boolean isInteger() {
+        return type == TreeNodeType.INTEGER;
+    }
+
+    public boolean isSExpression() {
+        return type == TreeNodeType.S_EXPRESSION;
+    }
+
+    public boolean isNil() {
+        return type == TreeNodeType.S_EXPRESSION && lst.size() == 0;
+    }
+
+    // hasHead tells if current node which is expected to be a S-Expression has head atom.
+    public boolean hasHead() {
+        return lst.size() > 0;
+    }
+
+    public ASTTree getHead() {
+        return lst.get(0);
+    }
+
+    public ArrayList<ASTTree> getTail() {
+        lst = new ArrayList<>(this.lst);
+        lst.remove(0);
+        return lst;
+    }
+
     // equal tells if token is str literally when the tree node IS AN ATOM.
     public boolean equals(String str) {
         return atom.toString().equals(str);
     }
 
-    public void add(ASTTree child) {
+    public void add(@NotNull ASTTree child) {
         child.parent = this;
         this.lst.add(child);
     }

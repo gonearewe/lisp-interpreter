@@ -11,6 +11,11 @@ public class Environment {
         env.put(key, val);
     }
 
+    Environment(Environment old, String newKey, ASTTree newVal) {
+        env.put(newKey, newVal);
+        parent = old;
+    }
+
     public ASTTree get(String key) {
         if (env.containsKey(key)) {
             return env.get(key);

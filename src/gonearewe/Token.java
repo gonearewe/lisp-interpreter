@@ -32,6 +32,10 @@ public class Token {
         return !isSeparator(c) && c != '\'' && c != '`';
     }
 
+    public void setToken(String s) {
+        token = s;
+    }
+
     public int getRow() {
         return row;
     }
