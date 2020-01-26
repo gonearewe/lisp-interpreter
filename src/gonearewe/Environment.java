@@ -7,13 +7,16 @@ public class Environment {
     private Map<String, ASTTree> env = new HashMap<>();
     private Environment parent;
 
-    Environment(String key, ASTTree val) {
-        env.put(key, val);
+    Environment() {
     }
 
     Environment(Environment old, String newKey, ASTTree newVal) {
         env.put(newKey, newVal);
         parent = old;
+    }
+
+    Environment(Environment parent) {
+        this.parent = parent;
     }
 
     public ASTTree get(String key) {

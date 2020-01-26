@@ -3,12 +3,14 @@ package gonearewe;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class ASTTree {
     ASTTree parent;
     ArrayList<ASTTree> lst;
     Token atom;
     int integerVal; // used when type is INTEGER
+    Closure closure;
     private TreeNodeType type;
 
     public ASTTree() {
@@ -41,6 +43,11 @@ public class ASTTree {
         this.parent = this;
         this.lst = lst;
         setType(TreeNodeType.S_EXPRESSION);
+    }
+
+    public ASTTree(Closure closure) {
+        this.closure = closure;
+        setType(TreeNodeType.LAMBDA);
     }
 
     public ASTTree(@NotNull ASTTree template, String newTokenName) {
@@ -83,6 +90,10 @@ public class ASTTree {
         return type == TreeNodeType.S_EXPRESSION && lst.size() == 0;
     }
 
+    public boolean isLambda() {
+        return type == TreeNodeType.LAMBDA;
+    }
+
     // hasHead tells if current node which is expected to be a S-Expression has head atom.
     public boolean hasHead() {
         return lst.size() > 0;
@@ -106,6 +117,33 @@ public class ASTTree {
     public void add(@NotNull ASTTree child) {
         child.parent = this;
         this.lst.add(child);
+    }
+
+    public ArrayList<String> toStringList() {
+        var list = new ArrayList<String>();
+        for (var e : lst) {
+            list.add(e.getAtomName());
+        }
+
+        return list;
+    }
+
+    public String toString() {
+        switch (type) {
+            case ATOM:
+                return getAtomName();
+            case INTEGER:
+                return String.valueOf(integerVal);
+            case S_EXPRESSION:
+                if (lst.size() == 0) {
+                    return "NIL";
+                }
+                return lst.stream().map(ASTTree::getAtomName).collect(Collectors.joining(" "));
+            case LAMBDA:
+                return closure.toString();
+        }
+
+        return "turn ASTTree into String: you shouldn't end up reaching here !!!";
     }
 
     private void setType(TreeNodeType type) {
