@@ -1,2 +1,2 @@
-(a b)
-((lambda (x) (cons x ('(b)))) (' a))
+101
+((lambda (x) (+ x 100)) 1)

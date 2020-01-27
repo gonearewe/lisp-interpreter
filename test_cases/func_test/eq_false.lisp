@@ -1,2 +1,2 @@
-nil
-(eq (' a) (' b))
+NIL
+(eq 'a 'b)

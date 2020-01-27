@@ -71,6 +71,7 @@ public class Token {
         return kind == TokenKind.RIGHT_BRACKET;
     }
 
+    @Override
     public String toString() {
         return token;
     }

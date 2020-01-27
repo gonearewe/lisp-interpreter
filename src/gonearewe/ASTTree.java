@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public class ASTTree {
     ASTTree parent;
-    ArrayList<ASTTree> lst;
+    ArrayList<ASTTree> lst = new ArrayList<>();
     Token atom;
     int integerVal; // used when type is INTEGER
     Closure closure;
@@ -22,8 +22,10 @@ public class ASTTree {
     public ASTTree(@NotNull Token atom) {
         super();
         if (atom.isNil()) {
+            this.atom = atom;
             setType(TreeNodeType.S_EXPRESSION);
         } else if (atom.isInteger()) {
+            this.atom = atom;
             integerVal = atom.integerValue();
             setType(TreeNodeType.INTEGER);
         } else {
@@ -128,6 +130,7 @@ public class ASTTree {
         return list;
     }
 
+    @Override
     public String toString() {
         switch (type) {
             case ATOM:

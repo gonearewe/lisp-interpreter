@@ -1,2 +1,2 @@
-(a b)
-(cons 'a ('(b)))
+(A B C)
+(cons 'a '(b c))

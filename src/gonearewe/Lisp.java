@@ -59,12 +59,13 @@ public class Lisp {
 
             if (head.isAtom()) {
                 // arith
-                if (Arrays.asList(new String[]{"+", "-", "*"}).contains(node.getAtomName())) {
+                if (Arrays.asList(new String[]{"+", "-", "*"}).contains(headName)) {
                     return arith(headName, tail, env);
                 }
 
                 switch (headName) {
                     case "QUOTE":
+                    case "'":
                         return tail.get(0); // TODO: maybe throw an exception when no tail found?
                     case "ATOM":
                         return eval(tail.get(0), env).isAtom() ? new ASTTree(node, "#t") : new ASTTree();
@@ -119,21 +120,21 @@ public class Lisp {
             case "+":
                 int sum = 0;
                 for (var operand : operands) {
-                    sum = +eval(operand, env).integerVal;
+                    sum += eval(operand, env).integerVal;
                 }
                 return new ASTTree(operands.get(0), String.valueOf(sum));
 
             case "-":
                 int result = 0;
                 for (var operand : operands) {
-                    result = -eval(operand, env).integerVal;
+                    result -= eval(operand, env).integerVal;
                 }
                 return new ASTTree(operands.get(0), String.valueOf(result));
 
             case "*":
                 int ans = 0;
                 for (var operand : operands) {
-                    ans = ans * eval(operand, env).integerVal;
+                    ans *= eval(operand, env).integerVal;
                 }
                 return new ASTTree(operands.get(0), String.valueOf(ans));
         }

@@ -21,7 +21,7 @@ public class Tokenizer {
     public ArrayList<Token> tokenize() throws IOException, TokenException {
         while (true) { // -1 means EOF
             column++; // update column row,column
-            System.out.println(tokens);
+            //            System.out.println(tokens);
             int ci = src.read();
             if (ci == -1) {
                 break;
@@ -38,11 +38,11 @@ public class Tokenizer {
             } else if (c == ')') {
                 addToken(TokenKind.RIGHT_BRACKET);
             } else if (c == '`' || c == '\'') {
-                column = +handleQuote();
-                expectSeparator();
+                column += handleQuote();
+                //                expectSeparator();
             } else {
                 src.unread(c); // put back the first letter
-                column = +handleWordOrInteger();
+                column += handleWordOrInteger();
                 expectSeparator();
             }
         }
@@ -66,23 +66,25 @@ public class Tokenizer {
     // handleQuote is called when quote's abbr. is found, it adds quote expression to tokens
     // and returns the length of the token, the word either is a single "'" or starts with a "'".
     private int handleQuote() throws IOException, TokenException {
-        var word = new StringBuilder();
+        //        var word = new StringBuilder();
 
-        while (true) {
-            var next = (char) src.read();
-            if (Token.isValidChar(next)) { // unfinished word
-                word.append(next);
-            } else if (!TokenKind.isINTEGER(word.toString())) { // finished, add to tokens
-                // '\'a' or '`a' is just a syntax sugar for '(quote a)'
-                addToken(TokenKind.LEFT_BRACKET);
-                addToken(TokenKind.WORD, "quote");
-                addToken(TokenKind.WORD, word.toString().toUpperCase());
-                addToken(TokenKind.RIGHT_BRACKET);
-                return word.length();
-            } else {
-                throw new TokenException("%d:%d: invalid or empty word after a quote", row, column);
-            }
-        }
+        addToken(TokenKind.WORD, "'");
+        return 1;
+        //        while (true) {
+        //            var next = (char) src.read();
+        //            if (Token.isValidChar(next)) { // unfinished word
+        //                word.append(next);
+        //            } else if (!TokenKind.isINTEGER(word.toString())) { // finished, add to tokens
+        //                // '\'a' or '`a' is just a syntax sugar for '(quote a)'
+        //                addToken(TokenKind.LEFT_BRACKET);
+        //                addToken(TokenKind.WORD, "quote");
+        //                addToken(TokenKind.WORD, word.toString().toUpperCase());
+        //                addToken(TokenKind.RIGHT_BRACKET);
+        //                return word.length();
+        //            } else {
+        //                throw new TokenException("%d:%d: invalid or empty word after a quote", row, column);
+        //            }
+        //        }
     }
 
     // handleWordOrInteger reads an integer or a word and add it to tokens.

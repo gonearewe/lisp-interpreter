@@ -1,2 +1,2 @@
-(a b c d)
+(A B C D)
 (list 'a 'b 'c 'd)

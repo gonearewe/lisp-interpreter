@@ -13,6 +13,7 @@ public class Closure {
         this.env = env;
     }
 
+    @Override
     public String toString() {
         var s = new StringBuilder("Closure [ params: ");
         for (var param : params) {

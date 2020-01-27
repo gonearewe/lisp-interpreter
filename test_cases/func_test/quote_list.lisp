@@ -1,2 +1,2 @@
-(a b)
+(A B)
 (quote (a b))
