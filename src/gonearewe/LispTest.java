@@ -57,10 +57,10 @@ class LispTest {
         var input = testFiles.get(cnt);
         var t = new Tokenizer(input);
         try {
-            ASTTree root = Parser.parse(t.tokenize());
-            System.out.println("ID " + cnt + expectedResults.get(cnt) + " " + Lisp.evalAndPrint(root));
+            ArrayList<ASTree> topRoots = Parser.parse(t.tokenize());
+            System.out.println("ID " + cnt + " " + expectedResults.get(cnt) + " " + Lisp.evalAndPrint(topRoots));
         } catch (Exception e) {
-            //            System.out.println(e.getMessage() + Arrays.toString(e.getStackTrace()));
+            System.out.println(e.getMessage());
         }
     }
 }

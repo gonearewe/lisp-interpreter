@@ -4,13 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Environment {
-    private Map<String, ASTTree> env = new HashMap<>();
+    private Map<String, ASTree> env = new HashMap<>();
     private Environment parent;
 
     Environment() {
     }
 
-    Environment(Environment old, String newKey, ASTTree newVal) {
+    Environment(Environment old, String newKey, ASTree newVal) {
         env.put(newKey, newVal);
         parent = old;
     }
@@ -19,7 +19,7 @@ public class Environment {
         this.parent = parent;
     }
 
-    public ASTTree get(String key) {
+    public ASTree get(String key) {
         if (env.containsKey(key)) {
             return env.get(key);
         }
@@ -30,7 +30,7 @@ public class Environment {
         return null;
     }
 
-    public void put(String key, ASTTree val) {
+    public void put(String key, ASTree val) {
         env.put(key, val);
     }
 }

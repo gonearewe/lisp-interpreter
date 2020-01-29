@@ -1,2 +1,2 @@
 #T
-(atom (' a))
+(atom 'a)

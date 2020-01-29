@@ -1,4 +1,5 @@
-second
+SECOND
 (cond
-  ( (atom (' ())) (' first) )
-  ( #t 'second) )
+    ((eq 'a 'b) 'first)
+    ((eq 'a 'a) 'second)
+)

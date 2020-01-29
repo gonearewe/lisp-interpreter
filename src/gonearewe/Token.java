@@ -1,6 +1,9 @@
 package gonearewe;
 
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 public class Token {
     private String token;
     private TokenKind kind;
@@ -12,6 +15,27 @@ public class Token {
         this.token = token;
         this.row = row;
         this.column = column;
+    }
+
+    // LeftBracketToken generates a default LEFT_BRACKET without position information.
+    @NotNull
+    @Contract(value = " -> new", pure = true)
+    public static Token LeftBracketToken() {
+        return new Token(TokenKind.LEFT_BRACKET, "(", -1, -1);
+    }
+
+    // RightBracketToken generates a default RIGHT_BRACKET without position information.
+    @NotNull
+    @Contract(value = " -> new", pure = true)
+    public static Token RightBracketToken() {
+        return new Token(TokenKind.RIGHT_BRACKET, ")", -1, -1);
+    }
+
+    // QuoteBracketToken generates a default token 'quote' with provided position information.
+    @NotNull
+    @Contract(value = " -> new", pure = true)
+    public static Token QuoteToken(int row, int column) {
+        return new Token(TokenKind.WORD, "QUOTE", row, column);
     }
 
     // isSeparator tells if given char is a space or a bracket.
@@ -69,6 +93,10 @@ public class Token {
 
     public boolean isRightBracket() {
         return kind == TokenKind.RIGHT_BRACKET;
+    }
+
+    public boolean isQuoteAbbr() {
+        return token == "'" || token == "`";
     }
 
     @Override

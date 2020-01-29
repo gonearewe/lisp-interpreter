@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 public class Closure {
     ArrayList<String> params;
-    ASTTree body;
+    ASTree body;
     Environment env;
 
-    Closure(ArrayList<String> params, ASTTree body, Environment env) {
+    Closure(ArrayList<String> params, ASTree body, Environment env) {
         this.params = params;
         this.body = body;
         this.env = env;

@@ -5,21 +5,21 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-public class ASTTree {
-    ASTTree parent;
-    ArrayList<ASTTree> lst = new ArrayList<>();
+public class ASTree {
+    ASTree parent;
+    ArrayList<ASTree> lst = new ArrayList<>();
     Token atom;
     int integerVal; // used when type is INTEGER
     Closure closure;
     private TreeNodeType type;
 
-    public ASTTree() {
+    public ASTree() {
         super();
-        this.parent = this; // avoid null, self-pointing indicates root node
+        this.parent = this; // NOTE: avoid null, self-pointing indicates root node
         type = TreeNodeType.S_EXPRESSION;
     }
 
-    public ASTTree(@NotNull Token atom) {
+    public ASTree(@NotNull Token atom) {
         super();
         if (atom.isNil()) {
             this.atom = atom;
@@ -34,30 +34,31 @@ public class ASTTree {
         }
     }
 
-    public ASTTree(ASTTree parent) {
+    public ASTree(ASTree parent) {
         super();
         this.parent = parent;
         setType(TreeNodeType.S_EXPRESSION);
     }
 
-    public ASTTree(ArrayList<ASTTree> lst) {
+    public ASTree(ArrayList<ASTree> lst) {
         super();
         this.parent = this;
         this.lst = lst;
         setType(TreeNodeType.S_EXPRESSION);
     }
 
-    public ASTTree(Closure closure) {
+    public ASTree(Closure closure) {
         this.closure = closure;
         setType(TreeNodeType.LAMBDA);
     }
 
-    public ASTTree(@NotNull ASTTree template, String newTokenName) {
+    // Generate a new ASTree from the template ASTree(ATOM type) but owns a different token name.
+    public ASTree(@NotNull ASTree template, String newTokenName) {
+        // this constructor is meant for inheriting template's token position
         super();
         atom = template.atom;
         parent = this;
-        type = template.type;
-        lst = template.lst;
+        type = TreeNodeType.ATOM;
         atom.setToken(newTokenName);
         if (atom.isInteger()) {
             integerVal = atom.integerValue();
@@ -101,11 +102,11 @@ public class ASTTree {
         return lst.size() > 0;
     }
 
-    public ASTTree getHead() {
+    public ASTree getHead() {
         return lst.get(0);
     }
 
-    public ArrayList<ASTTree> getTail() {
+    public ArrayList<ASTree> getTail() {
         lst = new ArrayList<>(this.lst);
         lst.remove(0);
         return lst;
@@ -116,9 +117,14 @@ public class ASTTree {
         return atom.toString().equals(str);
     }
 
-    public void add(@NotNull ASTTree child) {
+    public void add(@NotNull ASTree child) {
         child.parent = this;
         this.lst.add(child);
+    }
+
+    public void add(int index, @NotNull ASTree child) {
+        child.parent = this;
+        this.lst.add(index, child);
     }
 
     public ArrayList<String> toStringList() {
@@ -141,7 +147,7 @@ public class ASTTree {
                 if (lst.size() == 0) {
                     return "NIL";
                 }
-                return lst.stream().map(ASTTree::getAtomName).collect(Collectors.joining(" "));
+                return "(" + lst.stream().map(ASTree::getAtomName).collect(Collectors.joining(" ")) + ")";
             case LAMBDA:
                 return closure.toString();
         }
