@@ -15,9 +15,9 @@ public class Environment {
         parent = old;
     }
 
-    Environment(Environment parent) {
-        this.parent = parent;
-    }
+    //    Environment(Environment parent) {
+    //        this.parent = parent;
+    //    }
 
     public ASTree get(String key) {
         if (env.containsKey(key)) {
@@ -32,5 +32,9 @@ public class Environment {
 
     public void put(String key, ASTree val) {
         env.put(key, val);
+    }
+
+    public void setParent(Environment parent) {
+        this.parent = parent;
     }
 }

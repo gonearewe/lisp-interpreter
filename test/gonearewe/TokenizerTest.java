@@ -13,7 +13,7 @@ class TokenizerTest {
 
     @Test
     void tokenize() throws Exception {
-        var input = new FileInputStream("D:\\MyProjects\\lisp-interpreter\\test_cases\\eval.lisp");
+        var input = new FileInputStream("D:\\MyProjects\\lisp-interpreter\\test_cases");
         var t = new Tokenizer(input);
         for (var token : t.tokenize()) {
             System.out.println(token.toString());

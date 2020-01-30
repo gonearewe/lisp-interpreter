@@ -31,6 +31,12 @@ public class Token {
         return new Token(TokenKind.RIGHT_BRACKET, ")", -1, -1);
     }
 
+    @NotNull
+    @Contract(value = "_, _ -> new", pure = true)
+    public static Token positionToken(int row, int column) {
+        return new Token(TokenKind.WORD, "PositionToken", row, column);
+    }
+
     // QuoteBracketToken generates a default token 'quote' with provided position information.
     @NotNull
     @Contract(value = " -> new", pure = true)

@@ -7,13 +7,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Lisp {
-    public static String evalAndPrint(@NotNull ArrayList<ASTree> roots) {
+    public static String evalAndPrint(@NotNull ArrayList<ASTree> roots, Environment env) {
         //        if (root.isAtom()) {
         //            return root.getAtomName();
         //        }
 
         var result = new ASTree();
-        var env = new Environment();
         try {
             for (var root : roots) {
                 result = eval(root, env); // only print the last value
@@ -59,12 +58,18 @@ public class Lisp {
         if (node.hasHead()) {
             var head = node.getHead();
             var tail = node.getTail();
-            var headName = head.getAtomName();
 
             if (head.isAtom()) {
+                var headName = head.getAtomName();
+
                 // arith
                 if (Arrays.asList(new String[]{"+", "-", "*"}).contains(headName)) {
                     return arith(headName, tail, env);
+                }
+
+                // compare
+                if (Arrays.asList(new String[]{">", "<", "="}).contains(headName)) {
+                    return compare(headName, tail, env);
                 }
 
                 switch (headName) {
@@ -103,9 +108,9 @@ public class Lisp {
             // apply user-defined function
             var headVal = eval(head, env);
             if (headVal.isLambda()) {
-                return apply(head, tail, env);
+                return apply(headVal, tail, env);
             } else {
-                throw new RuntimeException("%s undefined function", head.getPosition());
+                throw new RuntimeException("%s undefined function: ", head.getPosition(), headVal.toStringList());
             }
         }
 
@@ -128,18 +133,42 @@ public class Lisp {
                 return new ASTree(operands.get(0), String.valueOf(sum));
 
             case "-":
-                int result = 0;
-                for (var operand : operands) {
-                    result -= eval(operand, env).integerVal;
+                int result = eval(operands.get(0), env).integerVal;
+                for (int i = 1; i < operands.size(); i++) {
+                    result -= eval(operands.get(i), env).integerVal;
                 }
                 return new ASTree(operands.get(0), String.valueOf(result));
 
             case "*":
-                int ans = 0;
+                int ans = 1;
                 for (var operand : operands) {
                     ans *= eval(operand, env).integerVal;
                 }
                 return new ASTree(operands.get(0), String.valueOf(ans));
+        }
+
+        throw new RuntimeException("hey, developer! you shouldn't reach here");
+    }
+
+    @NotNull
+    private static ASTree compare(String opName, @NotNull ArrayList<ASTree> operands, Environment env) throws RuntimeException {
+        if (operands.size() != 2) {
+            throw new RuntimeException("expecting 2 arguments for comparing operation: ", opName);
+        }
+
+        var op1 = eval(operands.get(0), env);
+        var op2 = eval(operands.get(1), env);
+        if (!op1.isInteger() || !op2.isInteger()) {
+            throw new RuntimeException("%s comparing operands not integers", op1.getPosition());
+        }
+
+        switch (opName) {
+            case ">":
+                return op1.integerVal > op2.integerVal ? new ASTree(operands.get(0), "#T") : new ASTree();
+            case "<":
+                return op1.integerVal < op2.integerVal ? new ASTree(operands.get(0), "#T") : new ASTree();
+            case "=":
+                return op1.integerVal == op2.integerVal ? new ASTree(operands.get(0), "#T") : new ASTree();
         }
 
         throw new RuntimeException("hey, developer! you shouldn't reach here");
@@ -218,7 +247,7 @@ public class Lisp {
         if (tail.size() != 2) {
             throw new RuntimeException("expect 2 arguments for calling `lambda`");
         }
-        return new ASTree(new Closure(eval(tail.get(0), env).toStringList(), eval(tail.get(1), env), env));
+        return new ASTree(new Closure(tail.get(0).toStringList(), tail.get(1), env));
     }
 
     private static void defun(@NotNull ArrayList<ASTree> tail, Environment env) throws RuntimeException {
@@ -234,16 +263,17 @@ public class Lisp {
         env.put(name.getAtomName(), value);
     }
 
+    // TODO: you can't call a function for a second time during to loss of func.closure.body which I don't know why.
     // apply calls func with arguments given by tail.
     @NotNull
     private static ASTree apply(@NotNull ASTree func, @NotNull ArrayList<ASTree> tail, Environment env) throws RuntimeException {
-        Closure closure = func.closure;
-        if (tail.size() != closure.params.size()) {
+        if (tail.size() != func.closure.params.size()) {
             throw new RuntimeException("%s call closure: parameter number mismatched", tail.get(0).getPosition());
         }
-        Environment newEnv = new Environment(env); // a new environment for running closure
+        Environment newEnv = new Environment(); // a new environment for running closure
+        newEnv.setParent(env);
         int i = 0;
-        for (var param : closure.params) { // eval for closure's param
+        for (var param : func.closure.params) { // eval for closure's param
             newEnv.put(param, eval(tail.get(i), env));
             i++;
         }

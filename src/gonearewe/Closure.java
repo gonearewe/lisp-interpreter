@@ -3,9 +3,9 @@ package gonearewe;
 import java.util.ArrayList;
 
 public class Closure {
-    ArrayList<String> params;
-    ASTree body;
-    Environment env;
+    final ArrayList<String> params;
+    final ASTree body;
+    final Environment env;
 
     Closure(ArrayList<String> params, ASTree body, Environment env) {
         this.params = params;

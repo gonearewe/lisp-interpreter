@@ -56,11 +56,16 @@ public class ASTree {
     public ASTree(@NotNull ASTree template, String newTokenName) {
         // this constructor is meant for inheriting template's token position
         super();
-        atom = template.atom;
+        var validTemplate = template;
+        while (validTemplate.atom == null) {
+            validTemplate = validTemplate.lst.get(0);
+        }
+        atom = Token.positionToken(validTemplate.atom.getRow(), validTemplate.atom.getColumn());
         parent = this;
         type = TreeNodeType.ATOM;
         atom.setToken(newTokenName);
         if (atom.isInteger()) {
+            type = TreeNodeType.INTEGER;
             integerVal = atom.integerValue();
         } else {
             integerVal = template.integerVal;
@@ -68,7 +73,11 @@ public class ASTree {
     }
 
     public String getAtomName() {
-        return atom.toString();
+        if (atom != null) {
+            return atom.toString();
+        } else {
+            return "notATOM";
+        }
     }
 
     // getPosition returns position info(row and column index) of the token at current node,

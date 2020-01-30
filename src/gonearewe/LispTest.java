@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 class LispTest {
+    // TEST
     static final String testsPath = "D:\\MyProjects\\lisp-interpreter\\test_cases";
     ArrayList<FileInputStream> testFiles = new ArrayList<>();
     // expected results are given on the first line of each test file
@@ -41,9 +42,12 @@ class LispTest {
             var s = new StringBuilder();
             while (true) {
                 var c = (char) test.read();
-                if (c == '\r') {
+                if (c == '\r') { // windows newline, '\r\n'
                     test.read(); // pass '\n'
                     break;
+                }
+                if (c == '\n') {
+                    break; // Unix newline, a single '\n'
                 }
 
                 s.append(c);
@@ -56,9 +60,10 @@ class LispTest {
     void evalAndPrint(int cnt) {
         var input = testFiles.get(cnt);
         var t = new Tokenizer(input);
+        var env = new Environment();
         try {
             ArrayList<ASTree> topRoots = Parser.parse(t.tokenize());
-            System.out.println("ID " + cnt + " " + expectedResults.get(cnt) + " " + Lisp.evalAndPrint(topRoots));
+            System.out.println("ID " + cnt + " " + expectedResults.get(cnt) + " " + Lisp.evalAndPrint(topRoots, env));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
